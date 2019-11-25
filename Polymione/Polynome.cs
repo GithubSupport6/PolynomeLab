@@ -25,10 +25,11 @@ namespace Polynome
                 if (elem.Contains("-"))
                 {
                     var ms = elem.Split('-');
-                    foreach (var m in ms)
+                    workWithCoeff(ms[0]);
+
+                    for (int i = 1; i < ms.Length; i++)
                     {
-                        if (m!="")
-                        workWithCoeff("-" + m);
+                        workWithCoeff("-" + ms[i]);
                     }
                 }
                 else
@@ -135,31 +136,85 @@ namespace Polynome
             {
                 for (int i = dest; i < p2.coeffs.Count; i++)
                 {
-                    coeffs.Add(p2.coeffs[i]);
+                    coeffs.Add(new Coeff(-p2.coeffs[i].up,p2.coeffs[i].down));
                 }
             }
 
             return new Polynome(coeffs);
         }
 
+        public static Polynome operator*(Polynome p1, Polynome p2)
+        {
+            List<Coeff> result = new List<Coeff>();
+
+            var maxPow = p1.coeffs.Count + p2.coeffs.Count;
+            for (int i = 0; i < maxPow; i++)
+            {
+                result.Add(new Coeff(0,0));
+            }
+
+            for (int i = 0; i < p1.coeffs.Count; i++)
+            {
+                for (int j = 0; j < p2.coeffs.Count; j++)
+                {
+                    var c = new Coeff(p1.coeffs[i] * p2.coeffs[j]);
+                    var pow = i + j;
+                    result[pow] += c;
+                }
+            }
+
+            return new Polynome(result);
+        }
+
+        public double AtPoint(double x)
+        {
+            double res = 0;
+            int pow = 0;
+            foreach (var c in coeffs)
+            {
+                double sub = Math.Pow(x, pow) * c.up;
+                if (c.down != 0)
+                {
+                    sub /= c.down;
+                }
+
+                res += sub;
+                pow++;
+            }
+
+            return res;
+        }
+
+        public static Polynome operator /(Polynome p1, Polynome p2)
+        {
+            List<Coeff> result = new List<Coeff>();
+
+
+
+            return null;
+        }
+
         public override string ToString()
         {
             string res = "";
             int pow = 0;
+            var tmp = coeffs.ToList();
+
             foreach (var c in coeffs)
             {
-                if (!(c.down == 0 && c.up == 0))
+                if (c.up != 0)
                 {
+                    var coeff = new Coeff(c);
                     if (c.up>0 && res.Length > 0)
                     {
                         res += "+";
                     }
                     if (c.up < 0)
                     {
-                        c.up = -c.up;
+                        coeff.up = -coeff.up;
                         res += "-";
                     }
-                    res += c + "x^" + pow;
+                    res += coeff + "x^" + pow;
                 }
                 pow++;
             }

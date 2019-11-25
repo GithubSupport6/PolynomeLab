@@ -8,6 +8,12 @@ namespace Polynome
 {
     class Coeff
     {
+        public Coeff(Coeff c)
+        {
+            this.down = c.down;
+            this.up = c.up;
+        }
+
         public Coeff(double up, double down)
         {
             var nod = NOD(Math.Abs(up), Math.Abs(down));
@@ -70,6 +76,14 @@ namespace Polynome
             }
             Coeff res = new Coeff(c1.up * c2.down - c2.up * c1.down, c1.down * c2.down);
             return res;
+        }
+
+
+        public static Coeff operator *(Coeff left, Coeff right)
+        {
+            double up = left.up * right.up;
+            double down = left.down * right.down;
+            return  new Coeff(up,down);
         }
 
         public override string ToString()
