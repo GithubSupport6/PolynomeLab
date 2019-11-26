@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,7 @@ namespace Polynome
     {
         List<Coeff> coeffs = new List<Coeff>();
         
+
         public Polynome(List<Coeff> coeffs)
         {
             this.coeffs = coeffs;
@@ -25,6 +27,8 @@ namespace Polynome
                 if (elem.Contains("-"))
                 {
                     var ms = elem.Split('-');
+
+                    
                     workWithCoeff(ms[0]);
 
                     for (int i = 1; i < ms.Length; i++)
@@ -39,6 +43,11 @@ namespace Polynome
 
         private void workWithCoeff(string elem)
         {
+            if (elem == "")
+            {
+                return;
+            }
+
             if (!elem.Contains("x"))
             {
                 addInCoeffs(0, getCoeff(elem));
@@ -62,7 +71,7 @@ namespace Polynome
 
         private Coeff getCoeff(string elem)
         {
-            var c = elem.Split('^')[0].Replace("x", "").Split('/');
+            var c = elem.Split('^')[0].Replace("x", "").Replace("(", "").Replace(")", "").Split('/');
 
             Coeff toAdd;
             if (c.Length > 1)
@@ -73,7 +82,12 @@ namespace Polynome
             }
             else
             {
-                toAdd = new Coeff(double.Parse(c[0]), 1);
+                if (c.First() == "-")
+                {
+                    toAdd = new Coeff(-1,1);
+                }
+                else if (c.First() != "" && c.First() != "-" && c.First() != "+") toAdd = new Coeff(double.Parse(c[0]), 1);
+                else toAdd = new Coeff(1, 1);
             }
             return toAdd;
         }
@@ -185,39 +199,93 @@ namespace Polynome
             return res;
         }
 
-        public static Polynome operator /(Polynome p1, Polynome p2)
+        public static KeyValuePair<Polynome,Polynome> operator /(Polynome p1, Polynome p2)
         {
-            List<Coeff> result = new List<Coeff>();
+            var result = new Polynome("0");
 
+            if (p1.coeffs.Count < p2.coeffs.Count) return new KeyValuePair<Polynome, Polynome>(new Polynome("0"),p1);
 
+            var index = p1.coeffs.Count - 1;
 
-            return null;
+            int pow = p1.coeffs.Count - p2.coeffs.Count;
+
+            var divided = new Polynome(p1.coeffs);
+
+            var divider = new Polynome("0");
+
+            do
+            {
+                divider = new Polynome("0");
+
+                Coeff c = divided.coeffs[index] / p2.coeffs[p2.coeffs.Count - 1];
+
+                result = result + new Polynome(c + "x^" + pow);
+
+                divider = p2 * new Polynome(c + "x^" + pow);
+
+                divided -= divider;
+
+                index--;
+                pow--;
+            } while (pow>=0);
+
+            return new KeyValuePair<Polynome, Polynome>(result,divided);
+        }
+
+        private void removeZerosBefore()
+        {
+            var tmp = coeffs.ToList();
+
+            tmp.Reverse();
+
+            int i = 0;
+            Coeff c = tmp[i];
+
+            while (c.up==0)
+            {
+                tmp.Remove(c);
+                c = tmp[i];
+            }
+
+            coeffs = tmp;
+            coeffs.Reverse();
         }
 
         public override string ToString()
         {
+            removeZerosBefore();
             string res = "";
-            int pow = 0;
+            int pow = coeffs.Count - 1;
             var tmp = coeffs.ToList();
 
-            foreach (var c in coeffs)
-            {
-                if (c.up != 0)
+            tmp.Reverse();
+
+            foreach (var c in tmp) { 
+
+                if (c.up == 0 || c.down == 0)
                 {
-                    var coeff = new Coeff(c);
-                    if (c.up>0 && res.Length > 0)
-                    {
-                        res += "+";
-                    }
-                    if (c.up < 0)
-                    {
-                        coeff.up = -coeff.up;
-                        res += "-";
-                    }
-                    res += coeff + "x^" + pow;
+                    pow--;
+                    continue;
+                    
                 }
-                pow++;
+
+
+                if (pow != coeffs.Count - 1 && c.up > 0)
+                {
+                        res += "+";
+                }
+
+                if (c.up != 1 || c.down != 1 || pow == 0)
+                {
+                    res += c;
+                }
+
+                if (pow == 1) res += "x";
+                else if (pow != 0) res += "x^" + pow;
+
+                pow--;
             }
+
             return res;
         }
     }

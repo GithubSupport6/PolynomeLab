@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -68,7 +69,7 @@ namespace Polynome
         {
             if (c1.down == 0 && c1.up == 0)
             {
-                return c2;
+                return new Coeff(-c2.up,c2.down);
             }
             if (c2.up == 0 && c2.down == 0)
             {
@@ -78,6 +79,11 @@ namespace Polynome
             return res;
         }
 
+        public static Coeff operator /(Coeff c1, Coeff c2)
+        {
+            Coeff temp = new Coeff(c2.down,c2.up);
+            return c1 * temp;
+        }
 
         public static Coeff operator *(Coeff left, Coeff right)
         {
@@ -88,7 +94,22 @@ namespace Polynome
 
         public override string ToString()
         {
-            return "(" + up + "/" + down + ")";
+            if (down == 1)
+            {
+                return up.ToString();
+            }
+
+            if (up == 0)
+            {
+                return "";
+            }
+
+            string res = "";
+            if (up < 0 || down < 0)
+            {
+                res += '-';
+            }
+            return res + "(" + Math.Abs(up) + "/" + Math.Abs(down) + ")";
         }
     }
 }
