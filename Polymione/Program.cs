@@ -55,7 +55,7 @@ namespace Polynome
             Console.WriteLine($"remains of monononomopolynom at {num} is {res}");
 
 
-            //Console.WriteLine("GCF = " + Polynome.GCF(a,b));
+            Console.WriteLine("GCF = " + Polynome.GCF(p1,p2));
 
             var krek = p2.Krek();
 

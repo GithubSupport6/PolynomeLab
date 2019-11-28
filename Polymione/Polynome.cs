@@ -20,16 +20,22 @@ namespace Polynome
 
         public Polynome(string poly)
         {
+            if (poly.Contains("E"))
+            {
+                poly = poly.Replace("E+", "Ep");
+                poly = poly.Replace("E-", "Em");
+            }
+
             poly = poly.Replace(" ", "");
             var elems = poly.Split("+".ToArray());
             foreach (var elem in elems)
             {
-                
+
                 if (elem.Contains("-"))
                 {
                     var ms = elem.Split('-');
 
-                    
+
                     workWithCoeff(ms[0]);
 
                     for (int i = 1; i < ms.Length; i++)
@@ -38,7 +44,7 @@ namespace Polynome
                     }
                 }
                 else
-                workWithCoeff(elem);
+                    workWithCoeff(elem);
             }
         }
 
@@ -72,22 +78,28 @@ namespace Polynome
 
         private Coeff getCoeff(string elem)
         {
+            if (elem.Contains("E"))
+            {
+                elem = elem.Replace("Ep", "E+");
+                elem = elem.Replace("Em", "Em");
+            }
+
             var c = elem.Split('^')[0].Replace("x", "").Replace("(", "").Replace(")", "").Split('/');
 
             Coeff toAdd;
             if (c.Length > 1)
             {
-                var right = double.Parse(c[0]);
-                var left = double.Parse(c[1]);
+                var right = BigInteger.Parse(c[0]);
+                var left = BigInteger.Parse(c[1]);
                 toAdd = new Coeff(right, left);
             }
             else
             {
                 if (c.First() == "-")
                 {
-                    toAdd = new Coeff(-1,1);
+                    toAdd = new Coeff(-1, 1);
                 }
-                else if (c.First() != "" && c.First() != "-" && c.First() != "+") toAdd = new Coeff(double.Parse(c[0]), 1);
+                else if (c.First() != "" && c.First() != "-" && c.First() != "+") toAdd = new Coeff(BigInteger.Parse(c[0]), 1);
                 else toAdd = new Coeff(1, 1);
             }
             return toAdd;
@@ -158,14 +170,14 @@ namespace Polynome
             return new Polynome(coeffs);
         }
 
-        public static Polynome operator*(Polynome p1, Polynome p2)
+        public static Polynome operator *(Polynome p1, Polynome p2)
         {
             List<Coeff> result = new List<Coeff>();
 
             var maxPow = p1.coeffs.Count + p2.coeffs.Count;
             for (int i = 0; i < maxPow; i++)
             {
-                result.Add(new Coeff(0,0));
+                result.Add(new Coeff(0, 0));
             }
 
             for (int i = 0; i < p1.coeffs.Count; i++)
@@ -187,13 +199,14 @@ namespace Polynome
             int pow = 0;
             foreach (var c in coeffs)
             {
-                double sub = Math.Pow(x, pow) * c.up;
+
+                BigInteger sub = BigInteger.Pow((BigInteger)x, pow) * c.up;
                 if (c.down != 0)
                 {
                     sub /= c.down;
                 }
 
-                res += sub;
+                res += (double)sub;
                 pow++;
             }
 
@@ -205,27 +218,42 @@ namespace Polynome
             Polynome copy1 = new Polynome(p1.coeffs);
             Polynome copy2 = new Polynome(p2.coeffs);
 
+            var CoeffGCF = new BigInteger();
+            bool order = false;
+
             while (copy1.coeffs.Count != 1 && copy2.coeffs.Count != 1)
             {
                 if (copy1.coeffs.Count > copy2.coeffs.Count)
                 {
                     copy1 = (copy1 / copy2).Value;
+                    order = true;
+
                 }
                 else
                 {
                     copy2 = (copy2 / copy1).Value;
+                    order = false;
                 }
+                Console.WriteLine(copy1);
+                Console.WriteLine(copy2);
+
             }
+
+            if (order)
+            {
+                return (copy1 / new Polynome(copy1.coeffs[0].ToString())).Key;
+            }
+            else return (copy2 / new Polynome(copy2.coeffs[0].ToString())).Key;
 
             return copy2 + copy1;
 
         }
 
-        public static KeyValuePair<Polynome,Polynome> operator /(Polynome p1, Polynome p2)
+        public static KeyValuePair<Polynome, Polynome> operator /(Polynome p1, Polynome p2)
         {
             var result = new Polynome("0");
 
-            if (p1.coeffs.Count < p2.coeffs.Count) return new KeyValuePair<Polynome, Polynome>(new Polynome("0"),p1);
+            if (p1.coeffs.Count < p2.coeffs.Count) return new KeyValuePair<Polynome, Polynome>(new Polynome("0"), p1);
 
             var index = p1.coeffs.Count - 1;
 
@@ -249,9 +277,9 @@ namespace Polynome
 
                 index--;
                 pow--;
-            } while (pow>=0);
+            } while (pow >= 0);
 
-            return new KeyValuePair<Polynome, Polynome>(result,divided);
+            return new KeyValuePair<Polynome, Polynome>(result, divided);
         }
 
         //public Polynome Krek(Polynome p2)
@@ -312,7 +340,7 @@ namespace Polynome
             foreach (var coeff in coeffs)
             {
                 // if denom != 1
-                if (Math.Abs(coeff.down - 1) > 0.0000001) return false;
+                if (coeff.down != BigInteger.One) return false;
             }
 
             return true;
