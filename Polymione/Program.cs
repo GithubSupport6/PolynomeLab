@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Polymione;
 
 namespace Polynome
 {
@@ -27,22 +28,31 @@ namespace Polynome
             //Console.WriteLine(p5);
             
 
+            // НУЖГЫЙ КОД
+            var p1 = new Polynome("-16x^6 + 20x^5 - 4x^3 - 12x^2 + 1");
+            var p2 = new Polynome("2x^4 - 3x^3 - 5x^2 - 14x - 1");
 
-            var p1 = new Polynome("x^3 - 12x^2 - 42");
-            var p2 = new Polynome("x - 3");
+            Console.WriteLine("Polynome 1" + p1);
+            Console.WriteLine("Polynome 2" + p2);
 
-            Console.WriteLine(p1);
-            Console.WriteLine((p1 / p2).Key + "\n" + (p1/p2).Value);
+            var a = (p1 / p2).Key;
+            var b = (p1 / p2).Value;
+            Console.WriteLine("Full : " + a);
+            Console.WriteLine("Remains : " + b);
+
+            //var num = MathUtils.Solve(new List<int>() { 5, 7, 11, 13 }, new List<int>() { 2, 1, 3, 8 });
+            var num = MathUtils.Solve(new[] { 5, 7, 11 }, new[] { 1, 3, 5 });
+
+            Console.WriteLine($"CHINA RESULT!: {num}");
+
+            var res = a.AtPoint(num);
+            Console.WriteLine($"full part of polymonopolynom at {num} is {res}");
+
+            res = b.AtPoint(num);
+            Console.WriteLine($"remains of monononomopolynom at {num} is {res}");
 
 
-            p1 = new Polynome("2x^5 - 3x^3 + x^2 + 4x + 1");
-
-            Console.WriteLine(p1);
-
-            p2 = new Polynome("2x^2 - x + 1");
-
-
-            Console.WriteLine((p1 / p2).Key + "\n" + (p1 / p2).Value);
+            Console.WriteLine("GCF = " + Polynome.GCF(a,b));
 
             Console.ReadKey();
         }

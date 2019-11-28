@@ -199,6 +199,27 @@ namespace Polynome
             return res;
         }
 
+        public static Polynome GCF(Polynome p1, Polynome p2)
+        {
+            Polynome copy1 = new Polynome(p1.coeffs);
+            Polynome copy2 = new Polynome(p2.coeffs);
+
+            while (copy1.coeffs.Count != 1 && copy2.coeffs.Count != 1)
+            {
+                if (copy1.coeffs.Count > copy2.coeffs.Count)
+                {
+                    copy1 = (copy1 / copy2).Value;
+                }
+                else
+                {
+                    copy2 = (copy2 / copy1).Value;
+                }
+            }
+
+            return copy2 + copy1;
+
+        }
+
         public static KeyValuePair<Polynome,Polynome> operator /(Polynome p1, Polynome p2)
         {
             var result = new Polynome("0");
