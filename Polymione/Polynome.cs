@@ -2,6 +2,7 @@
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -253,6 +254,145 @@ namespace Polynome
             return new KeyValuePair<Polynome, Polynome>(result,divided);
         }
 
+        //public Polynome Krek(Polynome p2)
+        //{
+        //    var m = 1;
+        //    for (var i = 0; i < coeffs.Count / 2; i++)
+        //    {
+        //        // if at point i == 0
+        //        if (Math.Abs(AtPoint(i)) < 0.0000001)
+        //        {
+        //            m = 1;
+        //            return new Polynome($"x - {i}");
+        //        }
+        //    }
+
+        //    var u = new List<Polynome>();
+        //    for (var i = 1; i < coeffs.Count / 2; i++)
+        //    {
+        //        var M = new List<Polynome>();
+
+        //    }
+        //}
+
+        public List<Polynome> Krek()
+        {
+            var parts = new List<Polynome>();
+            for (int i = 0; i <= (coeffs.Count - 1) / 2; ++i)
+            {
+                if (Math.Abs(AtPoint(i)) < 0.00001)
+                {
+                    return new List<Polynome> { new Polynome($"x - {i}") };
+                }
+            }
+            var U = GetDivs(0).Select(i => new List<int> { i }).ToList();
+            var partList = new List<Polynome>();
+            for (int i = 1; i <= (coeffs.Count - 1) / 2; ++i)
+            {
+                var M = GetDivs(i);
+                int length = Math.Max(M.Count, U.Count);
+                U = Mul(U, M);
+                foreach (var u in U)
+                {
+                    var polynom = Lagrange(u);
+                    if (!polynom.IsInteger()) continue;
+                    var remainder = (this / polynom).Value;
+                    if (polynom.coeffs.Count > 1 && remainder.coeffs.Count == 0)
+                    {
+                        partList.Add(polynom);
+                    }
+                }
+            }
+            parts = partList.ToList();
+            return parts;
+        }
+
+        public bool IsInteger()
+        {
+            foreach (var coeff in coeffs)
+            {
+                // if denom != 1
+                if (Math.Abs(coeff.down - 1) > 0.0000001) return false;
+            }
+
+            return true;
+        }
+
+        public static Polynome Lagrange(List<int> values)
+        {
+            List<Polynome> parts = new List<Polynome>();
+            for (int i = 0; i < values.Count; ++i)
+            {
+                var coef = 1;
+                var tek = new List<Polynome>();
+                for (int j = 0; j < values.Count; ++j)
+                {
+                    if (i == j) continue;
+                    var newTemp = new Polynome(new List<Coeff>()
+                    {
+                        new Coeff(-j, 1),
+                        new Coeff(1, 1)
+                    });
+                    //var newTemp = new Coeff(-j, 1);new Fraction[]
+                    //{
+                    //    new Fraction(-j, 1),
+                    //    new Fraction(1, 1)
+                    //});
+                    tek.Add(newTemp);
+                    coef *= (i - j);
+                }
+                if (tek.Count != 0)
+                {
+                    var t = new Coeff(values[i], coef);
+                    var temp = tek.Aggregate((x, y) => x * y);
+                    temp.coeffs = temp.coeffs.Select(x => x * t).ToList();
+                    temp.coeffs.Clear();
+                    if (temp.coeffs.Count != 0)
+                        parts.Add(temp);
+                }
+            }
+
+            if (parts.Count == 0)
+                return new Polynome("0");
+
+            return parts.Aggregate((i, k) => i + k);
+            //return null;
+        }
+
+        private static List<List<int>> Mul(List<List<int>> first, List<int> second)
+        {
+            var result = new List<List<int>>();
+            foreach (var x in first)
+            {
+                foreach (var y in second)
+                {
+                    var copy = x.ToList();
+                    copy.Add(y);
+                    result.Add(copy);
+                }
+            }
+            
+            return result;
+        }
+
+        private static List<int> GetDivs(int num)
+        {
+            List<int> result = new List<int>()
+            {
+                1, -1
+            };
+            for (int i = 2; i <= BigInteger.Abs(num); ++i)
+            {
+                if (num % i == 0)
+                {
+                    result.Add(i);
+                    result.Add(-i);
+                }
+            }
+
+            return result;
+        }
+
         private void removeZerosBefore()
         {
             var tmp = coeffs.ToList();
@@ -265,7 +405,8 @@ namespace Polynome
             while (c.up==0)
             {
                 tmp.Remove(c);
-                c = tmp[i];
+                if (tmp.Count > 0) c = tmp[i];
+                else c = new Coeff(0, 1);
             }
 
             coeffs = tmp;

@@ -31,6 +31,8 @@ namespace Polynome
             // НУЖГЫЙ КОД
             var p1 = new Polynome("-16x^6 + 20x^5 - 4x^3 - 12x^2 + 1");
             var p2 = new Polynome("2x^4 - 3x^3 - 5x^2 - 14x - 1");
+            //var p1 = new Polynome("8x^6 + 32x^3 - 16x^2 + 40");
+            //var p2 = new Polynome("-2x^4 - 3x^3 + 5x^2 - x - 1");
 
             Console.WriteLine("Polynome 1" + p1);
             Console.WriteLine("Polynome 2" + p2);
@@ -41,8 +43,9 @@ namespace Polynome
             Console.WriteLine("Remains : " + b);
 
             //var num = MathUtils.Solve(new List<int>() { 5, 7, 11, 13 }, new List<int>() { 2, 1, 3, 8 });
-            var num = MathUtils.Solve(new[] { 5, 7, 11 }, new[] { 1, 3, 5 });
-
+            var num = MathUtils.Solve(new[] { 3, 7, 13 }, new[] { 1, 3, 5 });
+            //var num = MathUtils.Solve(new[] { 5, 7, 11 }, new[] { 1, 3, 5 });
+            
             Console.WriteLine($"CHINA RESULT!: {num}");
 
             var res = a.AtPoint(num);
@@ -52,7 +55,12 @@ namespace Polynome
             Console.WriteLine($"remains of monononomopolynom at {num} is {res}");
 
 
-            Console.WriteLine("GCF = " + Polynome.GCF(a,b));
+            //Console.WriteLine("GCF = " + Polynome.GCF(a,b));
+
+            var krek = p2.Krek();
+
+            krek.ForEach(Console.WriteLine);
+            //Console.WriteLine(krek);
 
             Console.ReadKey();
         }

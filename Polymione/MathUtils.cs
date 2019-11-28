@@ -54,13 +54,19 @@ namespace Polymione
             long carr = 0;
             long coefX = 0, coefY = 0;
 
-            for (int i = 0; i < modules.Length; i++)
+            var res = new List<long>();
+            var num = 0;
+            while ((num++) != 3)
             {
-                Marr = M / modules[i];
-                Euclid(Marr, modules[i], ref coefX, ref coefY);
-                carr = coefX * Marr;
-                result += carr * remains[i];
+                for (int i = 0; i < modules.Length; i++)
+                {
+                    Marr = M / modules[i];
+                    Euclid(Marr, modules[i], ref coefX, ref coefY);
+                    carr = coefX * Marr;
+                    result += carr * remains[i];
+                }
             }
+            
             return (modules.Length * M + result) % M;
         }
 
