@@ -34,8 +34,8 @@ namespace Polynome
             //var p1 = new Polynome("8x^6 + 32x^3 - 16x^2 + 40");
             //var p2 = new Polynome("-2x^4 - 3x^3 + 5x^2 - x - 1");
 
-            Console.WriteLine("Polynome 1" + p1);
-            Console.WriteLine("Polynome 2" + p2);
+            Console.WriteLine("Polynome 1: " + p1);
+            Console.WriteLine("Polynome 2: " + p2);
 
             var a = (p1 / p2).Key;
             var b = (p1 / p2).Value;
@@ -57,12 +57,14 @@ namespace Polynome
 
             Console.WriteLine("GCF = " + Polynome.GCF(p1, p2));
 
+            Console.WriteLine("Kroneker's diveders of polynome 2: ");
             var krek = p2.Krek();
+            var pol = krek[0];
+            Console.WriteLine(pol);
+            Console.WriteLine((p2 / pol).Key + " + " + (p2 / pol).Value);
+            Console.WriteLine("RES: ");
+            Console.WriteLine((p2 / pol).Key * pol);
 
-            var p3 = (p2 / krek[5]).Value;
-            Console.WriteLine(p3);
-
-            krek.ForEach(Console.WriteLine);
             //Console.WriteLine(krek);
 
             Console.ReadKey();
