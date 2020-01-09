@@ -45,7 +45,7 @@ namespace Polynome
             //var num = MathUtils.Solve(new List<int>() { 5, 7, 11, 13 }, new List<int>() { 2, 1, 3, 8 });
             var num = MathUtils.Solve(new[] { 3, 7, 13 }, new[] { 1, 3, 5 });
             //var num = MathUtils.Solve(new[] { 5, 7, 11 }, new[] { 1, 3, 5 });
-            
+
             Console.WriteLine($"CHINA RESULT!: {num}");
 
             var res = a.AtPoint(num);
@@ -55,9 +55,12 @@ namespace Polynome
             Console.WriteLine($"remains of monononomopolynom at {num} is {res}");
 
 
-            Console.WriteLine("GCF = " + Polynome.GCF(p1,p2));
+            Console.WriteLine("GCF = " + Polynome.GCF(p1, p2));
 
             var krek = p2.Krek();
+
+            var p3 = (p2 / krek[5]).Value;
+            Console.WriteLine(p3);
 
             krek.ForEach(Console.WriteLine);
             //Console.WriteLine(krek);

@@ -12,7 +12,6 @@ namespace Polynome
     {
         List<Coeff> coeffs = new List<Coeff>();
         
-
         public Polynome(List<Coeff> coeffs)
         {
             this.coeffs = coeffs;
@@ -313,11 +312,12 @@ namespace Polynome
                     return new List<Polynome> { new Polynome($"x - {i}") };
                 }
             }
-            var U = GetDivs(0).Select(i => new List<int> { i }).ToList();
+            var U = GetDivs((int)AtPoint(0)).Select(i => new List<int> { i }).ToList();
+
             var partList = new List<Polynome>();
             for (int i = 1; i <= (coeffs.Count - 1) / 2; ++i)
             {
-                var M = GetDivs(i);
+                var M = GetDivs((int)AtPoint(i));
                 int length = Math.Max(M.Count, U.Count);
                 U = Mul(U, M);
                 foreach (var u in U)
@@ -325,7 +325,7 @@ namespace Polynome
                     var polynom = Lagrange(u);
                     if (!polynom.IsInteger()) continue;
                     var remainder = (this / polynom).Value;
-                    if (polynom.coeffs.Count > 1 && remainder.coeffs.Count == 0)
+                    if (polynom.coeffs.Count > 1 && CheckPloynome(remainder)) 
                     {
                         partList.Add(polynom);
                     }
@@ -333,6 +333,19 @@ namespace Polynome
             }
             parts = partList.ToList();
             return parts;
+        }
+
+        private bool CheckPloynome(Polynome p)
+        {
+
+            for (int i = 1;i<p.coeffs.Count;i++)
+            {
+                if (p.coeffs[i].up!=0)
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
         public bool IsInteger()
@@ -374,7 +387,7 @@ namespace Polynome
                     var t = new Coeff(values[i], coef);
                     var temp = tek.Aggregate((x, y) => x * y);
                     temp.coeffs = temp.coeffs.Select(x => x * t).ToList();
-                    temp.coeffs.Clear();
+                    //temp.coeffs.Clear();
                     if (temp.coeffs.Count != 0)
                         parts.Add(temp);
                 }
@@ -475,7 +488,7 @@ namespace Polynome
 
                 pow--;
             }
-
+            if (res == "") res = "0";
             return res;
         }
     }
