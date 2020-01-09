@@ -335,6 +335,16 @@ namespace Polynome
             return parts;
         }
 
+        public Polynome Derivative()
+        {
+            Polynome polynome = new Polynome("0");
+            for (int i = 1;i<coeffs.Count;i++)
+            {
+                polynome.addInCoeffs(i - 1, coeffs[i] * new Coeff(i,1));
+            }
+            return polynome;
+        }
+
         private bool CheckPloynome(Polynome p)
         {
 

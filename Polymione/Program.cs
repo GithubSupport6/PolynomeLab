@@ -64,7 +64,8 @@ namespace Polynome
             Console.WriteLine((p2 / pol).Key + " + " + (p2 / pol).Value);
             Console.WriteLine("RES: ");
             Console.WriteLine((p2 / pol).Key * pol);
-
+            Console.WriteLine("Derivative: ");
+            Console.WriteLine(p2.Derivative());
             //Console.WriteLine(krek);
 
             Console.ReadKey();
